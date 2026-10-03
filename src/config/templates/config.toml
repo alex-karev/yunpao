@@ -1,0 +1,26 @@
+# Auto-generated
+{content}
+
+#############
+# Reference #
+#############
+
+# You can add new servers
+# [servers.unique_server_id_123]
+# user = "root"
+# host = "example.com"
+# port = 22
+# identity = "~/.ssh/id_rsa"
+# output_dir = "./" # Artifacts' dir. Passed as YUNPAO_OUTPUT_DIR variable
+# aliases = ["example_server"]
+
+# One server can be selected as default
+# default_server = "unique_server_id_123"
+
+# You can set global environment variables for all servers
+# [env]
+# FOO = "BAR"
+
+# You can also set server-specific environment variables
+# [servers.unique_server_id_123.env]
+# FOO = "BAR"

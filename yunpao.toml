@@ -1,0 +1,13 @@
+# Unique project id. Do NOT modify.
+id = "f713cdb9-16f0-4700-b7fd-bd11343cbf7a"
+
+# Artifacts to be downloaded when running "yunpao pull"
+# Relative paths and env variables are supported
+artifacts = ["target"]
+
+# By default all remote commands always read .env file. This behavior can be disabled
+# disable_dotenv = true
+
+# You can specify pre-defined actions and run them as background tasks using "yunpao run [action_name]"
+[actions]
+build = "cargo build"

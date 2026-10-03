@@ -1,0 +1,14 @@
+# Unique project id. Do NOT modify.
+id = "{id}"
+
+# Artifacts to be downloaded when running "yunpao pull"
+# Relative paths and env variables are supported
+# artifcats = ["target", "$SCRIPT_OUTPUT_DIR/model.pt", "~/.bash_history"]
+
+# By default all remote commands always read .env file. This behavior can be disabled
+# disable_dotenv = true
+
+# You can specify pre-defined actions and run them as background tasks using "yunpao run [action_name]"
+# [actions]
+# setup = "apt update && apt install python3"
+# hello = "echo 'Hello World'"
