@@ -64,6 +64,12 @@ pub enum Commands {
     },
     /// Connect to remote server via ssh
     SSH,
+    /// Delete session files on remote server
+    Clear {
+        /// Auto-confirm
+        #[arg(short, long)]
+        yes: bool,
+    },
     /// Manage servers
     Server {
         #[command(subcommand)]
@@ -105,6 +111,14 @@ pub enum ServerCommands {
     },
     /// List servers
     List,
+    /// Delete yunpao cache on remote server
+    Clear {
+        /// Server id or alias
+        name: Option<String>,
+        /// Auto-confirm
+        #[arg(short, long)]
+        yes: bool,
+    },
     /// Open interactive ssh session
     SSH {
         /// Server id or alias (default: current session)

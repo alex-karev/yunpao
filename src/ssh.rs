@@ -3,6 +3,7 @@ use anyhow::{Context, Result};
 use dotenvy::dotenv_iter;
 use log;
 use std::collections::HashMap;
+use std::path::PathBuf;
 use std::process::{Command, Stdio};
 
 #[derive(Debug, PartialEq)]
@@ -274,6 +275,20 @@ impl<'a> RemoteContext<'a> {
         self.exec(command)?;
         Ok(())
     }
+
+    /// Remove session files on remote server
+    pub fn clear(&self) -> Result<()> {
+        let path = PathBuf::from(&self.workdir)
+            .parent()
+            .context("Invalid path")?
+            .parent()
+            .context("Invalid path")?
+            .to_string_lossy()
+            .to_string();
+        let command = format!("rm -r {path}");
+        self.exec(command)?;
+        Ok(())
+    }
 }
 
 /// Run commands
@@ -324,6 +339,25 @@ pub fn ssh_copy_id(server: &Server) -> Result<()> {
         user = &server.user,
         host = &server.host,
     ));
+    run_command(&mut command)?;
+    Ok(())
+}
+
+/// Clear server
+pub fn clear_cache(server: &Server) -> Result<()> {
+    let mut command = Command::new("ssh");
+    if let Some(identity) = server.identity.as_ref() {
+        let identity_path = shellexpand::tilde(identity);
+        command.arg("-i");
+        command.arg(identity_path.to_string());
+    }
+    command.arg(format!("-p {}", &server.port));
+    command.arg(format!(
+        "{user}@{host}",
+        user = &server.user,
+        host = &server.host,
+    ));
+    command.arg("rm -r ~/.cache/yunpao");
     run_command(&mut command)?;
     Ok(())
 }

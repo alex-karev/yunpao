@@ -5,16 +5,11 @@ use crate::cli::server_dialogs::{new_server_dialog, select_server_dialog};
 use crate::cli::session_dialogs::{new_session_name_dialog, select_session_dialog};
 use anyhow::{Context, Result, bail, ensure};
 use clap::Parser;
-use cliclack::{
-    confirm, intro,
-    log::success,
-    outro, outro_cancel,
-    set_theme
-};
+use cliclack::{confirm, intro, log::success, outro, outro_cancel, set_theme};
 use colored::Colorize;
 use log::LevelFilter;
 use yunpao::config::{Global, Project};
-use yunpao::ssh::{RemoteContext, interactive_ssh, ssh_copy_id};
+use yunpao::ssh::{RemoteContext, clear_cache, interactive_ssh, ssh_copy_id};
 
 /// Start CLI application
 pub fn run() -> Result<()> {
@@ -117,7 +112,7 @@ pub fn run() -> Result<()> {
             } else {
                 log::info!("Logs");
                 context.logs(&action)?;
-                outro("Done!")?;
+                outro("End")?;
             }
         }
 
@@ -156,6 +151,21 @@ pub fn run() -> Result<()> {
             outro("Done!")?;
         }
 
+        Commands::Clear { yes } => {
+            intro("Deleting session cache".red())?;
+            if yes
+                || confirm("Are you sure you want to delete this session's cache on remote server?")
+                    .interact()?
+            {
+                let project = get_project()?;
+                let context = RemoteContext::new(&config, &project)?;
+                context.clear()?;
+                outro("Done!")?;
+            } else {
+                outro_cancel("Action cancelled")?;
+            }
+        }
+
         Commands::SSH => {
             intro("Interactive SSH Session")?;
             let project = get_project()?;
@@ -173,16 +183,9 @@ pub fn run() -> Result<()> {
                 let mut n_servers = 0;
                 for server in config.servers.values() {
                     n_servers += 1;
-                    println!(
-                        "{}: {}",
-                        server.id.bold().blue(),
-                        server.aliases.join(", ")
-                    );
+                    println!("{}: {}", server.id.bold().blue(), server.aliases.join(", "));
                 }
-                outro(format!(
-                    "{}: {n_servers} servers",
-                    "Total".blue().bold()
-                ))?;
+                outro(format!("{}: {n_servers} servers", "Total".blue().bold()))?;
             }
 
             ServerCommands::New {
@@ -219,6 +222,25 @@ pub fn run() -> Result<()> {
                 if let Some(id) = server_id {
                     config.delete_server(&id)?;
                     log::info!("Global config updated!");
+                    outro("Done!")?;
+                } else {
+                    outro_cancel("Action cancelled")?;
+                }
+            }
+
+            ServerCommands::Clear { name, yes } => {
+                intro("Deleting server cache".red())?;
+                let query = get_session_server(name);
+                let server = select_server_dialog(&config, query)?;
+                if yes
+                    || confirm(format!(
+                        "Are you sure you want to delete ALL cache on server \"{}\" ({})?",
+                        server.aliases.join(", "),
+                        server.id
+                    ))
+                    .interact()?
+                {
+                    clear_cache(&server)?;
                     outro("Done!")?;
                 } else {
                     outro_cancel("Action cancelled")?;
@@ -266,10 +288,7 @@ pub fn run() -> Result<()> {
                             session.created_at_str().italic().dimmed()
                         );
                     }
-                    outro(format!(
-                        "{}: {n_sessions} sessions",
-                        "Total".blue().bold()
-                    ))?;
+                    outro(format!("{}: {n_sessions} sessions", "Total".blue().bold()))?;
                 }
 
                 SessionCommands::New { name, server, yes } => {
@@ -283,10 +302,7 @@ pub fn run() -> Result<()> {
                     state.new_session(&server_id, name.as_ref())?;
                     let current_session = state.current_session().unwrap();
                     log::info!("State file updated!");
-                    log::info!(
-                        "Switched to session \"{}\"",
-                        current_session.name.bold()
-                    );
+                    log::info!("Switched to session \"{}\"", current_session.name.bold());
                     outro("Done!")?;
                 }
 
