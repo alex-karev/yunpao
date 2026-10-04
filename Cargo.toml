@@ -3,8 +3,12 @@ name = "yunpao"
 version = "0.1.0"
 description = "Remote Session and Task Manager"
 edition = "2024"
-license = "GPL-3.0-or-later"
+license-file = "LICENSE"
 authors = ["Alex Karev <alexkarev@sjtu.edu.cn>"]
+keywords = ["cli", "linux", "workflow", "machine-learning"]
+categories = ["command-line-utilities", "development-tools"]
+repository = "https://github.com/alex-karev/yunpao"
+readme = "README.md"
 
 [dependencies]
 anyhow = "1.0.104"
