@@ -3,7 +3,7 @@
 ## TODO:
 
 - [x] Check for typos
-- [ ] Add Arch PKGBUILD
+- [x] Add Arch PKGBUILD
 - [ ] Write proper README
 - [ ] Open repo
 - [ ] Publish to crates.io

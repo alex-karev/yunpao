@@ -1,6 +1,7 @@
 [package]
 name = "yunpao"
 version = "0.1.0"
+description = "Remote Session and Task Manager"
 edition = "2024"
 
 [dependencies]
