@@ -82,6 +82,8 @@ A CLI tool that helps syncing project files with remote server, run actions and 
 * Simple and well-documented configuration format.
 * Can be used in non-interactive manner by your AI agent of choice.
 
+> The name comes from Chinese "云跑", where "云" means "cloud" and "跑" means "run".
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
