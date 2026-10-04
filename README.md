@@ -80,7 +80,7 @@ A CLI tool that helps syncing project files with remote server, run actions and 
 * Works with any Linux server. No server-side configuration needed aside from installing `rsync`.
 * Does not clutter your system (both local and remote). Operates entirely in `~/.cache/yunpao` and can be removed any time.
 * Simple and well-documented configuration format.
-* Can be used in non-interactive manner by your AI agent of choice.
+* Can be used in non-interactive manner with your AI agent of choice.
 
 > The name comes from Chinese "云跑", where "云" means "cloud" and "跑" means "run".
 
@@ -147,7 +147,7 @@ yunpao init
 yunpao server new
 yunpao session new
 yunpao run --watch myaction
-yunpao pull myaction
+yunpao pull
 ```
 
 1. Open your project in terminal.
@@ -156,7 +156,7 @@ yunpao pull myaction
 4. Start new session via `yunpao session new`. Choose the server you've added.
 5. Run action on remote server with `yunpao run [actionname]`.
 6. See logs with `yunpao logs [actionname]` or watch it real-time using `yunpao watch [actionname]`.
-7. Download artifacts using `yunpao pull`
+7. Download artifacts using `yunpao pull`.
 
 > Run `yunpao --help` for more examples. You can also run each sub-command with `--help` flag to get more details.
 
@@ -164,11 +164,12 @@ yunpao pull myaction
 
 ### How it works
 
-YunPao operates on Projects, Servers and Sessions:
+YunPao operates on Projects, Servers, Sessions and Actions:
 
 * **Project** - your project described in `yunpao.toml`. Similar to `package.json` in NodeJS, project configuration determines commands to run when using `yunpao run`, artifacts to download when using `yunpao pull` etc.
 * **Server** - remote server configuration stored globally in `~/.config/yunpao/config.toml`. Defines user, host, port and identity file to use for each remote server. Every server can be used across multiple projects and multiple sessions within one project.
 * **Session** - specific environment, a link between project and server. Each project can have multiple sessions and they can be switched using `yunpao session switch`. When using `yunpao push` or `yunpao run`, project files are uploaded to `~/.cache/yunpao/sessions/[session_id]/working` directory on remote server, which resolves conflicts when dealing with multiple sessions using one server.
+- **Action** - command specified in `yunpao.toml`. Executed on remote server using `yunpao run`. Only one instance of each action can be running during the same session. If you need to run 2 instances of the same action at the same time - switch sessions.
 
 Servers and sessions can be managed using relevant sub-commands:
 
@@ -189,6 +190,7 @@ See `yunpao server help` and `yunpao session help` for more details.
 - [x] Write proper README
 - [x] Open repo
 - [x] Publish to crates.io
+- [ ] Add argument handling to `yunpao run`
 - [ ] Add demo screenshots
 - [ ] Add skill for agents
 
@@ -211,7 +213,7 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-Vibe-coded and low quality AI contributions are **discouraged**.
+Vibe-coded, low quality AI contributions are **discouraged**.
 
 ### Top contributors:
 
@@ -228,7 +230,7 @@ This is a passion project I've made to practice writing Rust code and use as a p
 
 - AI was **NOT** used for code generation.
 - AI was **NOT** used for the logo (source `.svg` file is available).
-- AI was consulted to get unstuck while running into borrow checker issues.
+- AI was consulted to get unstuck while running into borrow-checker issues.
 - AI was used for finding typos in documentation.
 - As mentioned above, vibe-coded (low quality) AI contributions are **discouraged**.
 
