@@ -2,7 +2,7 @@
 
 ## TODO:
 
-- [ ] Check for typos
+- [x] Check for typos
 - [ ] Add Arch PKGBUILD
 - [ ] Write proper README
 - [ ] Open repo

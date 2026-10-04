@@ -54,7 +54,7 @@ impl Server {
     }
 }
 
-/// Parse host string (ssh command, etc.), return user, host port
+/// Parse host string (ssh command, etc.), return user, host, port
 fn parse_host_string(raw: &str) -> Result<(&str, &str, &str)> {
     let err = || anyhow::anyhow!("Invalid input");
     // Parse complex input

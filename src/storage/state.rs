@@ -15,7 +15,7 @@ pub struct ProjectState {
 }
 
 impl ProjectState {
-    // Get path helper
+    /// Get path helper
     fn build_path(project_id: &String) -> PathBuf {
         let mut path = dirs::cache_dir().unwrap();
         path.push("yunpao");

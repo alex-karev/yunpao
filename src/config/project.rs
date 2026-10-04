@@ -1,5 +1,5 @@
-use crate::utils::{create_from_template, load_toml, random_uuid};
 use crate::storage::ProjectState;
+use crate::utils::{create_from_template, load_toml, random_uuid};
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, path::PathBuf};
@@ -15,11 +15,11 @@ pub struct Project {
     #[serde(default)]
     pub disable_dotenv: bool,
     #[serde(skip)]
-    pub state: ProjectState
+    pub state: ProjectState,
 }
 
 impl Project {
-    // Returns project config path
+    /// Returns project config path
     pub fn get_path() -> anyhow::Result<PathBuf> {
         let mut path = std::env::current_dir()?;
         path.push("yunpao.toml");

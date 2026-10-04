@@ -8,7 +8,7 @@ use std::process::{Command, Stdio};
 
 #[derive(Debug, PartialEq)]
 enum SSHMode {
-    Ineractive,
+    Interactive,
     StdOut,
     Raw,
 }
@@ -96,7 +96,7 @@ impl<'a> RemoteContext<'a> {
         };
         // Build command
         let mut command = Command::new("ssh");
-        if mode == SSHMode::Ineractive {
+        if mode == SSHMode::Interactive {
             command.arg("-t");
         }
         if let Some(identity) = self.server.identity.as_ref() {
@@ -115,7 +115,7 @@ impl<'a> RemoteContext<'a> {
     }
 
     // Rsync command base
-    fn buld_rsync_command(&self) -> Result<Command> {
+    fn build_rsync_command(&self) -> Result<Command> {
         // Define dirs
         let current_dir = std::env::current_dir()?;
         let mut gitdir = current_dir.clone();
@@ -159,7 +159,7 @@ impl<'a> RemoteContext<'a> {
             &format!("{}/{path}", &self.workdir)
         };
         // Build and run command
-        let mut command = self.buld_rsync_command()?;
+        let mut command = self.build_rsync_command()?;
         command.arg(format!(
             "{}@{}:{}",
             &self.server.user, &self.server.host, path_expand
@@ -225,7 +225,7 @@ impl<'a> RemoteContext<'a> {
 
     /// Run interactive ssh session
     pub fn ssh(&self) -> Result<()> {
-        let mut command = self.build_ssh_command("bash", SSHMode::Ineractive);
+        let mut command = self.build_ssh_command("bash", SSHMode::Interactive);
         run_command(&mut command)?;
         Ok(())
     }
@@ -235,7 +235,7 @@ impl<'a> RemoteContext<'a> {
         let current_dir = std::env::current_dir()?;
         let mut gitignore = current_dir.clone();
         gitignore.push(".gitignore");
-        let mut command = self.buld_rsync_command()?;
+        let mut command = self.build_rsync_command()?;
         if gitignore.exists() {
             command.arg(format!(
                 "--exclude-from={}",

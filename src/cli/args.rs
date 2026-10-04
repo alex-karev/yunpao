@@ -163,6 +163,6 @@ pub enum SessionCommands {
         #[arg(short, long)]
         yes: bool,
     },
-    /// List servers
+    /// List sessions
     List,
 }

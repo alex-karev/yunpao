@@ -15,7 +15,7 @@ pub struct Global {
 }
 
 impl Global {
-    // Returns global config path
+    /// Returns global config path
     pub fn get_path() -> Result<PathBuf> {
         let mut path = dirs::config_dir().context("Invalid path")?;
         path.push("yunpao");
@@ -63,8 +63,13 @@ impl Global {
 
     /// Find server by alias
     pub fn find_server(&self, query: &String) -> Result<&Server> {
-        let result = self.servers.iter().find(|(k,v)| v.aliases.contains(query) || k == &query || k.ends_with(query));
-        let server = result.context(format!("Server with alias or id '{}' not found", query))?.1;
+        let result = self
+            .servers
+            .iter()
+            .find(|(k, v)| v.aliases.contains(query) || k == &query || k.ends_with(query));
+        let server = result
+            .context(format!("Server with alias or id '{}' not found", query))?
+            .1;
         Ok(server)
     }
 

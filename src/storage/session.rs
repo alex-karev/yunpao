@@ -27,14 +27,14 @@ impl Session {
     pub fn new(server_id: &String, name: Option<&String>) -> Self {
         let timestamp = current_time();
         let mut session = Self {
-            name: name.cloned().unwrap_or("".to_string()),
+            name: name.cloned().unwrap_or(String::new()),
             server: server_id.clone(),
             created_at: timestamp,
             tasks: HashMap::new(),
             id: random_uuid(),
         };
         if session.name.is_empty() {
-            session.name = session.created_at_str()
+            session.name = session.created_at_str();
         }
         session
     }
