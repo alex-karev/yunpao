@@ -3,6 +3,8 @@ name = "yunpao"
 version = "0.1.0"
 description = "Remote Session and Task Manager"
 edition = "2024"
+license = "GPL-3.0-or-later"
+authors = ["Alex Karev <alexkarev@sjtu.edu.cn>"]
 
 [dependencies]
 anyhow = "1.0.104"

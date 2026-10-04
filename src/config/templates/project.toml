@@ -3,7 +3,7 @@ id = "{id}"
 
 # Artifacts to be downloaded when running "yunpao pull"
 # Relative paths and env variables are supported
-# artifcats = ["target", "$SCRIPT_OUTPUT_DIR/model.pt", "~/.bash_history"]
+# artifacts = ["target", "$SCRIPT_OUTPUT_DIR/model.pt", "~/.bash_history"]
 
 # By default all remote commands always read .env file. This behavior can be disabled
 # disable_dotenv = true
