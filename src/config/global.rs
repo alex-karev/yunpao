@@ -16,11 +16,20 @@ pub struct Global {
 
 impl Global {
     // Returns global config path
-    fn get_path() -> Result<PathBuf> {
-        let mut path = dirs::config_dir().unwrap();
+    pub fn get_path() -> Result<PathBuf> {
+        let mut path = dirs::config_dir().context("Invalid path")?;
         path.push("yunpao");
         path.push("config.toml");
         Ok(path)
+    }
+
+    /// Checks if config exists
+    pub fn exists() -> bool {
+        if let Some(path) = Self::get_path().ok() {
+            path.exists()
+        } else {
+            false
+        }
     }
 
     /// Save new config
@@ -94,19 +103,4 @@ impl Global {
         self.save()?;
         Ok(())
     }
-
-    /// Set env variable
-    pub fn set_env(&mut self, key: &String, value: &String) -> Result<()> {
-        self.env.insert(key.clone(), value.clone());
-        self.save()?;
-        Ok(())
-    }
-
-    /// Unset env variable
-    pub fn unset_env(&mut self, key: &String) -> Result<()> {
-        let _ = self.env.remove(key);
-        self.save()?;
-        Ok(())
-    }
-
 }

@@ -1,7 +1,6 @@
-use crate::utils::{current_time, random_uuid};
-use chrono::{DateTime, Utc};
+use crate::utils::{current_time, format_timestamp, random_uuid};
 use serde::{Deserialize, Serialize};
-use std::{path::PathBuf, time::{Duration, UNIX_EPOCH}, collections::HashMap};
+use std::{collections::HashMap, path::PathBuf};
 
 #[derive(Debug, Clone)]
 pub struct RemotePaths {
@@ -42,8 +41,6 @@ impl Session {
 
     /// Get session created_at in human-readable format
     pub fn created_at_str(&self) -> String {
-        let system_time = UNIX_EPOCH + Duration::from_secs(self.created_at);
-        let datetime: DateTime<Utc> = system_time.into();
-        datetime.format("%Y-%m-%d %H:%M:%S").to_string()
+        format_timestamp(self.created_at)
     }
 }

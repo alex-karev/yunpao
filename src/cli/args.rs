@@ -70,6 +70,12 @@ pub enum Commands {
         #[arg(short, long)]
         yes: bool,
     },
+    /// Edit configuration file
+    Edit {
+        /// Edit global configuration
+        #[arg(short, long)]
+        global: bool,
+    },
     /// Manage servers
     Server {
         #[command(subcommand)]

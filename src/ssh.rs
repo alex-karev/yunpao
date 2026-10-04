@@ -213,6 +213,9 @@ impl<'a> RemoteContext<'a> {
             .context(format!("Action \"{action}\" is undefined"))?
             .clone();
         let logfile = format!("{}/{action}.log", &self.logdir);
+        remote_command = format!(
+            "echo \"[yunpao] Started: $(date +%Y-%m-%d\\ %H:%M:%S)\"; {remote_command}; echo \"[yunpao] Finished at: $(date +%Y-%m-%d\\ %H:%M:%S)\"; echo \"[yunpao] Exit code: $?\""
+        );
         remote_command = format!("nohup bash -l -c '{remote_command}' > {logfile} 2>&1 & echo $!");
         let pid = self.exec_output(remote_command, false)?;
         session.tasks.insert(action.clone(), pid.clone());

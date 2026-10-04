@@ -174,6 +174,21 @@ pub fn run() -> Result<()> {
             outro("Disconnected")?;
         }
 
+        Commands::Edit { global } => {
+            if global {
+                intro("Editing global config")?;
+                if !Global::exists() {
+                    config.save()?;
+                }
+                edit::edit_file(Global::get_path()?)?;
+            } else {
+                intro("Editing project config")?;
+                let _ = get_project()?;
+                edit::edit_file(Project::get_path()?)?;
+            }
+            outro("Done!")?;
+        }
+
         /*
          * Server Managment
          */

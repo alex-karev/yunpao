@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
+use chrono::{DateTime, Utc};
 use serde::{Serialize, de::DeserializeOwned};
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use std::{collections::HashMap, fs, path::PathBuf};
 use uuid::Uuid;
 
@@ -49,9 +50,14 @@ pub fn create_from_template(
 /// Get current timestamp
 pub fn current_time() -> u64 {
     let now = SystemTime::now();
-    let unix_timestamp = now
-        .duration_since(UNIX_EPOCH)
-        .expect("Time went backwards");
+    let unix_timestamp = now.duration_since(UNIX_EPOCH).expect("Time went backwards");
     let timestamp_secs = unix_timestamp.as_secs();
     timestamp_secs
+}
+
+/// Get time in human-readable format
+pub fn format_timestamp(timestamp: u64) -> String {
+    let system_time = UNIX_EPOCH + Duration::from_secs(timestamp);
+    let datetime: DateTime<Utc> = system_time.into();
+    datetime.format("%Y-%m-%d %H:%M:%S").to_string()
 }
