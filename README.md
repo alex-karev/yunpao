@@ -115,7 +115,7 @@ cd yunpao
 cargo install --path .
 ```
 
-Arch via PKGBUILD:
+Arch:
 
 ```sh
 curl -O https://raw.githubusercontent.com/alex-karev/yunpao/main/PKGBUILD
@@ -188,7 +188,8 @@ See `yunpao server help` and `yunpao session help` for more details.
 - [x] Add Arch PKGBUILD
 - [x] Write proper README
 - [x] Open repo
-- [ ] Publish to crates.io
+- [x] Publish to crates.io
+- [ ] Add demo screenshots
 - [ ] Add skill for agents
 
 See the [open issues](https://github.com/alex-karev/yunpao/issues) for a full list of proposed features (and known issues).
