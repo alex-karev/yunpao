@@ -162,7 +162,7 @@ pub fn run() -> Result<()> {
                 context.clear()?;
                 outro("Done!")?;
             } else {
-                outro_cancel("Action cancelled")?;
+                bail!("Action cancelled");
             }
         }
 
@@ -239,7 +239,7 @@ pub fn run() -> Result<()> {
                     log::info!("Global config updated!");
                     outro("Done!")?;
                 } else {
-                    outro_cancel("Action cancelled")?;
+                    bail!("Action cancelled");
                 }
             }
 
@@ -258,7 +258,7 @@ pub fn run() -> Result<()> {
                     clear_cache(&server)?;
                     outro("Done!")?;
                 } else {
-                    outro_cancel("Action cancelled")?;
+                    bail!("Action cancelled");
                 }
             }
 
@@ -354,7 +354,7 @@ pub fn run() -> Result<()> {
                         log::info!("State file updated!");
                         outro("Done!")?;
                     } else {
-                        outro_cancel("Action cancelled")?;
+                        bail!("Action cancelled");
                     }
                 }
             }

@@ -35,7 +35,7 @@ impl Theme for CliclackTheme {
         format!("=== {message} ===\n")
     }
     fn format_outro_cancel(&self, message: &str) -> String {
-        format!("=== {message} ===\n")
+        format!("{message}\n=== Exit ===\n")
     }
     fn format_log_with_spacing(&self, text: &str, symbol: &str, spacing: bool) -> String {
         format!("{symbol} {text}\n{}", if spacing { "\n" } else { "" })
