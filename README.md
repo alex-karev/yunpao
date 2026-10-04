@@ -15,7 +15,7 @@
     <img src="assets/logo.png" alt="Logo" width="100" height="100">
   </a>
 
-  <h3 align="center"></h3>
+  <h3 align="center">YunPao</h3>
 
   <p align="center">
     Session and task manager for remote builds, execution and scientific experiments
