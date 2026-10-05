@@ -63,8 +63,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-<!-- TODO: Add screenshots -->
-<!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
+<a href="https://github.com/alex-karev/yunpao">
+    <img src="assets/demo.gif" alt="YunPao Demo" width="200">
+</a>
 
 A CLI tool that helps syncing project files with remote server, run actions and commands in the background and download resulting artifacts. The main purpose is to offload heavy operations to a more powerful device. It can be used for running remote builds, training AI and processing large amounts of data. Everything is done over SSH and the only requirement for a remote server is to have `rsync` installed.
 
@@ -191,7 +192,7 @@ See `yunpao server help` and `yunpao session help` for more details.
 - [x] Open repo
 - [x] Publish to crates.io
 - [ ] Add argument handling to `yunpao run`
-- [ ] Add demo screenshots
+- [x] Add demo screenshots
 - [ ] Add skill for agents
 
 See the [open issues](https://github.com/alex-karev/yunpao/issues) for a full list of proposed features (and known issues).
