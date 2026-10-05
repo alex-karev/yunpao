@@ -125,13 +125,13 @@ curl -O https://raw.githubusercontent.com/alex-karev/yunpao/main/PKGBUILD
 makepkg -si
 ```
 
-Debian:
+Debian/Ubuntu:
 
 ```sh
 cargo install cargo-deb
 git clone https://github.com/alex-karev/yunpao.git
 cd yunpao
-cargo install --path .
+cargo-deb
 sudo dpkg -i target/debian/yunpao_*.deb  
 ```
 
