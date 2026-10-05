@@ -197,6 +197,7 @@ See `yunpao server help` and `yunpao session help` for more details.
 - [x] Add demo screenshots
 - [x] Add background running for `yunpao exec`
 - [ ] Add skill for agents
+- [ ] Refactor `ssh.rs`
 
 See the [open issues](https://github.com/alex-karev/yunpao/issues) for a full list of proposed features (and known issues).
 
