@@ -9,7 +9,7 @@ use cliclack::{confirm, intro, log::success, outro, outro_cancel, set_theme};
 use colored::Colorize;
 use log::LevelFilter;
 use yunpao::config::{Global, Project};
-use yunpao::ssh::{RemoteContext, clear_cache, interactive_ssh, ssh_copy_id};
+use yunpao::ssh::{RemoteCommand, RemoteContext, clear_cache, interactive_ssh, ssh_copy_id};
 
 /// Start CLI application
 pub fn run() -> Result<()> {
@@ -17,7 +17,7 @@ pub fn run() -> Result<()> {
     set_theme(CliclackTheme);
     let _args = Args::parse();
     let log_level = match _args.verbose {
-        0 => LevelFilter::Error,
+        0 => LevelFilter::Info,
         1 => LevelFilter::Debug,
         _ => LevelFilter::Trace,
     };
@@ -80,27 +80,20 @@ pub fn run() -> Result<()> {
             intro(format!("Running \"{action}\""))?;
             let mut project = get_project()?;
             let context = RemoteContext::new(&config, &project)?;
+            let session = get_session_mut(&mut project)?;
             if no_sync {
                 log::warn!("--no-sync flag passed. Skipping upload operation.");
             }
-            let session = get_session_mut(&mut project)?;
-            if !force
-                && session.tasks.contains_key(&action)
-                && context.check_pid(session.tasks.get(&action).unwrap())?
-                && !confirm(format!(
-                    "Action \"{action}\" might be still running on remote (PID {}), run anyway?",
-                    session.tasks.get(&action).unwrap()
-                ))
-                .interact()?
-            {
+            if !force && !confirm_same_action(session, &context, action.as_str())? {
                 bail!("Action cancelled!");
             }
-            let args_str = if args.len() > 0 {
-                Some(args.join(" "))
-            } else {
-                None
-            };
-            let pid = context.run(&mut project, &action, !no_sync, args_str)?;
+            let args_str = parse_args(args);
+            let pid = context.run(
+                &mut project,
+                RemoteCommand::Action(&action),
+                !no_sync,
+                args_str,
+            )?;
             success(format!("Process is started with pid {pid}"))?;
             if watch {
                 watch_logs(&context, &action)?;
@@ -116,7 +109,6 @@ pub fn run() -> Result<()> {
             if watch {
                 watch_logs(&context, &action)?;
             } else {
-                log::info!("Logs");
                 context.logs(&action)?;
                 outro("End")?;
             }
@@ -149,12 +141,38 @@ pub fn run() -> Result<()> {
             }
         }
 
-        Commands::Exec { command } => {
+        Commands::Exec {
+            command,
+            watch,
+            force,
+            no_sync,
+            args,
+        } => {
             intro(format!("Running \"{command}\""))?;
-            let project = get_project()?;
+            let mut project = get_project()?;
             let context = RemoteContext::new(&config, &project)?;
-            context.exec(command)?;
-            outro("Done!")?;
+            let session = get_session_mut(&mut project)?;
+            if no_sync {
+                log::warn!("--no-sync flag passed. Skipping upload operation.");
+            }
+            let action = command.split(" ").next().context("Empty command passed")?;
+            if !force && !confirm_same_action(session, &context, action)? {
+                bail!("Action cancelled!");
+            }
+            let args_str = parse_args(args);
+            let pid = context.run(
+                &mut project,
+                RemoteCommand::Exec(&command),
+                !no_sync,
+                args_str,
+            )?;
+            success(format!("Process is started with pid {pid}"))?;
+            log::info!("Use \"{}\" as action id for {} sub-commands", action.bold().blue(), "kill|log|swtich".bold());
+            if watch {
+                watch_logs(&context, &action.to_string())?;
+            } else {
+                outro("Done!")?;
+            }
         }
 
         Commands::Clear { yes } => {

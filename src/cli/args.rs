@@ -64,6 +64,18 @@ pub enum Commands {
     Exec {
         /// Command to be executed
         command: String,
+        /// Continuously sync logs right after start
+        #[arg(short, long)]
+        watch: bool,
+        /// Force override if action is already running
+        #[arg(short, long)]
+        force: bool,
+        /// Skip uploading files to remote (requires "yunpao push")
+        #[arg(long)]
+        no_sync: bool,
+        /// Arguments to pass to the command
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
     },
     /// Connect to remote server via ssh
     SSH,

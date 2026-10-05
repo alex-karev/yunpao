@@ -13,6 +13,12 @@ enum SSHMode {
     Raw,
 }
 
+#[derive(Debug, PartialEq)]
+pub enum RemoteCommand<'a> {
+    Action(&'a String),
+    Exec(&'a String),
+}
+
 #[derive(Debug)]
 pub struct RemoteContext<'a> {
     workdir: String,
@@ -199,7 +205,14 @@ impl<'a> RemoteContext<'a> {
     }
 
     /// Run action and save its pid in project state
-    pub fn run(&self, project: &mut Project, action: &String, sync: bool, args: Option<String>) -> Result<String> {
+    pub fn run(
+        &self,
+        project: &mut Project,
+        command: RemoteCommand,
+        sync: bool,
+        args: Option<String>,
+    ) -> Result<String> {
+        // Load session and push
         let session = project
             .state
             .current_session_mut()
@@ -207,22 +220,36 @@ impl<'a> RemoteContext<'a> {
         if sync {
             self.push()?;
         }
-        let mut remote_command = project
-            .actions
-            .get(action)
-            .context(format!("Action \"{action}\" is undefined"))?
-            .clone();
-        let logfile = format!("{}/{action}.log", &self.logdir);
-        if let Some(args_str) = args && !args_str.trim().is_empty(){
+        // Define base command
+        let (mut remote_command, action_name) = match command {
+            RemoteCommand::Exec(cmd) => {
+                let name = cmd.split(" ").next().unwrap().to_string();
+                (cmd.clone(), name)
+            }
+            RemoteCommand::Action(name) => (
+                project
+                    .actions
+                    .get(name)
+                    .context(format!("Action \"{name}\" is undefined"))?
+                    .clone(),
+                name.clone(),
+            ),
+        };
+        let logfile = format!("{}/{action_name}.log", &self.logdir);
+        if let Some(args_str) = args
+            && !args_str.trim().is_empty()
+        {
             remote_command = format!("{remote_command} {}", args_str.trim());
         }
-        let command_log = remote_command.clone();
+        let remote_command_log = remote_command.clone();
+        // Wrap command
         remote_command = format!(
-            "echo \"[yunpao] Started: $(date +%Y-%m-%d\\ %H:%M:%S)\"; echo \"[yunpao] Command: {command_log}\"; {remote_command}; echo \"[yunpao] Finished: $(date +%Y-%m-%d\\ %H:%M:%S)\"; echo \"[yunpao] Exit code: $?\""
+            "echo \"[yunpao] Started: $(date +%Y-%m-%d\\ %H:%M:%S)\"; echo \"[yunpao] Command: {remote_command_log}\"; {remote_command}; echo \"[yunpao] Finished: $(date +%Y-%m-%d\\ %H:%M:%S)\"; echo \"[yunpao] Exit code: $?\""
         );
         remote_command = format!("nohup bash -l -c '{remote_command}' > {logfile} 2>&1 & echo $!");
+        // Save pid
         let pid = self.exec_output(remote_command, false)?;
-        session.tasks.insert(action.clone(), pid.clone());
+        session.tasks.insert(action_name, pid.clone());
         project.state.save()?;
         Ok(pid)
     }
