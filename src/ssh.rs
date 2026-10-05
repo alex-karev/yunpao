@@ -216,8 +216,9 @@ impl<'a> RemoteContext<'a> {
         if let Some(args_str) = args && !args_str.trim().is_empty(){
             remote_command = format!("{remote_command} {}", args_str.trim());
         }
+        let command_log = remote_command.clone();
         remote_command = format!(
-            "echo \"[yunpao] Started: $(date +%Y-%m-%d\\ %H:%M:%S)\"; {remote_command}; echo \"[yunpao] Finished at: $(date +%Y-%m-%d\\ %H:%M:%S)\"; echo \"[yunpao] Exit code: $?\""
+            "echo \"[yunpao] Started: $(date +%Y-%m-%d\\ %H:%M:%S)\"; echo \"[yunpao] Command: {command_log}\"; {remote_command}; echo \"[yunpao] Finished: $(date +%Y-%m-%d\\ %H:%M:%S)\"; echo \"[yunpao] Exit code: $?\""
         );
         remote_command = format!("nohup bash -l -c '{remote_command}' > {logfile} 2>&1 & echo $!");
         let pid = self.exec_output(remote_command, false)?;
