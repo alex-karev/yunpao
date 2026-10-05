@@ -38,6 +38,9 @@ pub enum Commands {
         /// Skip uploading files to remote (requires "yunpao push")
         #[arg(long)]
         no_sync: bool,
+        /// Arguments to pass to the action
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
     },
     /// Sync action logs from remote server
     Logs {

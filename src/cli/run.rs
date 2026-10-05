@@ -75,6 +75,7 @@ pub fn run() -> Result<()> {
             watch,
             force,
             no_sync,
+            args,
         } => {
             intro(format!("Running \"{action}\""))?;
             let mut project = get_project()?;
@@ -94,7 +95,12 @@ pub fn run() -> Result<()> {
             {
                 bail!("Action cancelled!");
             }
-            let pid = context.run(&mut project, &action, !no_sync)?;
+            let args_str = if args.len() > 0 {
+                Some(args.join(" "))
+            } else {
+                None
+            };
+            let pid = context.run(&mut project, &action, !no_sync, args_str)?;
             success(format!("Process is started with pid {pid}"))?;
             if watch {
                 watch_logs(&context, &action)?;

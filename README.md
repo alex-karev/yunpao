@@ -193,8 +193,9 @@ See `yunpao server help` and `yunpao session help` for more details.
 - [x] Write proper README
 - [x] Open repo
 - [x] Publish to crates.io
-- [ ] Add argument handling to `yunpao run`
+- [x] Add argument handling to `yunpao run`
 - [x] Add demo screenshots
+- [ ] Add background running for `yunpao exec`
 - [ ] Add skill for agents
 
 See the [open issues](https://github.com/alex-karev/yunpao/issues) for a full list of proposed features (and known issues).

@@ -199,7 +199,7 @@ impl<'a> RemoteContext<'a> {
     }
 
     /// Run action and save its pid in project state
-    pub fn run(&self, project: &mut Project, action: &String, sync: bool) -> Result<String> {
+    pub fn run(&self, project: &mut Project, action: &String, sync: bool, args: Option<String>) -> Result<String> {
         let session = project
             .state
             .current_session_mut()
@@ -213,6 +213,9 @@ impl<'a> RemoteContext<'a> {
             .context(format!("Action \"{action}\" is undefined"))?
             .clone();
         let logfile = format!("{}/{action}.log", &self.logdir);
+        if let Some(args_str) = args && !args_str.trim().is_empty(){
+            remote_command = format!("{remote_command} {}", args_str.trim());
+        }
         remote_command = format!(
             "echo \"[yunpao] Started: $(date +%Y-%m-%d\\ %H:%M:%S)\"; {remote_command}; echo \"[yunpao] Finished at: $(date +%Y-%m-%d\\ %H:%M:%S)\"; echo \"[yunpao] Exit code: $?\""
         );

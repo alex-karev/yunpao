@@ -11,3 +11,4 @@ artifacts = ["target"]
 # You can specify pre-defined actions and run them as background tasks using "yunpao run [action_name]"
 [actions]
 build = "cargo build"
+demo = "chmod +x ./demo/test.sh && ./demo/test.sh"
