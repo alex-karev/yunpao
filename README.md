@@ -63,9 +63,11 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-<a href="https://github.com/alex-karev/yunpao">
-    <img src="assets/demo.gif" alt="YunPao Demo" width="200">
-</a>
+<div align="center">
+  <a href="https://github.com/alex-karev/yunpao/blob/main/assets/demo.gif?raw=true">
+      <img src="assets/demo.gif" alt="YunPao Demo" width="768">
+  </a>
+</div>
 
 A CLI tool that helps syncing project files with remote server, run actions and commands in the background and download resulting artifacts. The main purpose is to offload heavy operations to a more powerful device. It can be used for running remote builds, training AI and processing large amounts of data. Everything is done over SSH and the only requirement for a remote server is to have `rsync` installed.
 
