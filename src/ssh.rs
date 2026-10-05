@@ -391,7 +391,7 @@ pub fn clear_cache(server: &Server) -> Result<()> {
         user = &server.user,
         host = &server.host,
     ));
-    command.arg("rm -r ~/.cache/yunpao");
+    command.arg("rm -r ~/.cache/yunpao/sessions");
     run_command(&mut command)?;
     Ok(())
 }
