@@ -5,6 +5,8 @@ use log;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 #[derive(Debug, PartialEq)]
 enum SSHMode {
@@ -306,7 +308,15 @@ impl<'a> RemoteContext<'a> {
     pub fn watch(&self, action: &String) -> Result<()> {
         let path = format!("{}/{action}.log", &self.logdir);
         let command = format!("tail -f {path} 2>/dev/null || echo 'No log file found'");
-        self.exec(command)?;
+        let running = Arc::new(AtomicBool::new(true));
+        let r = running.clone();
+        ctrlc::set_handler(move || {
+            r.store(false, Ordering::SeqCst);
+        })
+        .context("Error setting Ctrl-C handler")?;
+        while running.load(Ordering::SeqCst) {
+            self.exec(&command)?;
+        }
         Ok(())
     }
 

@@ -1,5 +1,6 @@
 use anyhow::{Context, Result, ensure};
 use cliclack::{confirm, log as clilog, outro};
+use colored::Colorize;
 use yunpao::config::Project;
 use yunpao::ssh::RemoteContext;
 use yunpao::storage::Session;
@@ -38,12 +39,11 @@ pub fn get_session_server(name: Option<String>) -> Option<String> {
 }
 
 pub fn watch_logs(context: &RemoteContext, action: &String) -> Result<()> {
-    clilog::info("Watching log file (press Ctrl+C to detach)")?;
+    log::info!("Watching log file (press {} to detach)", "Ctrl+C".bold().blue());
     context.watch(&action)?;
-    outro(format!(
-        "Detached. Use \"yunpao watch {}\" to re-attach.",
-        &action
-    ))?;
+    println!("\n");
+    log::info!("Detached. Use \"{} {}\" to re-attach.", "yunpao watch".bold().blue(), &action.bold().blue());
+    outro("End")?;
     Ok(())
 }
 

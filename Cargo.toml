@@ -16,6 +16,7 @@ chrono = "0.4.45"
 clap = { version = "4.6.7", features = ["derive"] }
 cliclack = "0.5.6"
 colored = "3.1.1"
+ctrlc = "3.5.2"
 derive = "1.0.0"
 dirs = "7.0.0"
 dotenvy = "0.15.7"

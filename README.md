@@ -196,7 +196,7 @@ See `yunpao server help` and `yunpao session help` for more details.
 - [x] Add argument handling to `yunpao run`
 - [x] Add demo screenshots
 - [x] Add background running for `yunpao exec`
-- [ ] Fix error exit code after ctrl+c from watch
+- [x] Fix error exit code after ctrl+c from watch
 - [ ] Add skill for agents
 - [ ] Refactor `ssh.rs`
 
