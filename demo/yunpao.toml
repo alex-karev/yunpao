@@ -1,5 +1,5 @@
 # Unique project id. Do NOT modify.
-id = "774f5dff-20e8-460b-814b-264825e8a0ac"
+id = "f397f159-a6ea-4d93-a60a-2514f85937da"
 
 # Artifacts to be downloaded when running "yunpao pull"
 # Relative paths and env variables are supported
@@ -10,6 +10,6 @@ artifacts = ["result.txt"]
 
 # You can specify pre-defined actions and run them as background tasks using "yunpao run [action_name]"
 [actions]
-demo = "chmod +x test.sh && ./test.sh"
+demo = "chmod +x ./demo.sh && ./demo.sh"
 # setup = "apt update && apt install python3"
 # hello = "echo 'Hello World'"
