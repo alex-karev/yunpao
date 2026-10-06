@@ -1,5 +1,5 @@
 use anyhow::{Context, Result, ensure};
-use cliclack::{confirm, log as clilog, outro};
+use cliclack::{confirm, outro};
 use colored::Colorize;
 use yunpao::config::Project;
 use yunpao::ssh::RemoteContext;

@@ -1,6 +1,6 @@
 [package]
 name = "yunpao"
-version = "0.1.1"
+version = "0.1.2"
 description = "Remote Session and Task Manager"
 edition = "2024"
 license-file = "LICENSE"
