@@ -18,7 +18,7 @@
   <h3 align="center">YunPao</h3>
 
   <p align="center">
-    Session and task manager for remote builds, execution and scientific experiments
+    Session and task manager for remote builds, remote execution and machine learning
     <!-- <br /> -->
     <!-- <a href="https://github.com/alex-karev/yunpao"><strong>Explore the docs »</strong></a> -->
     <!-- <br /> -->
@@ -69,7 +69,7 @@
   </a>
 </div>
 
-A CLI tool that helps syncing project files with remote server, run actions and commands in the background and download resulting artifacts. The main purpose is to offload heavy operations to a more powerful device. It can be used for running remote builds, training AI and processing large amounts of data. Everything is done over SSH and the only requirement for a remote server is to have `rsync` installed.
+A CLI tool that helps syncing project files with remote server, run actions and commands in the background and download resulting artifacts. The main purpose is to offload heavy operations to a more powerful device. It can be used for running remote builds, machine learning and processing large amounts of data. Everything is done over SSH and the only requirement for a remote server is to have `rsync` installed.
 
 **Features**:
 
