@@ -197,7 +197,7 @@ See `yunpao server help` and `yunpao session help` for more details.
 - [x] Add demo screenshots
 - [x] Add background running for `yunpao exec`
 - [x] Fix error exit code after ctrl+c from watch
-- [ ] Add skill for agents
+- [x] Add skill for agents
 - [ ] Refactor `ssh.rs`
 
 See the [open issues](https://github.com/alex-karev/yunpao/issues) for a full list of proposed features (and known issues).
@@ -238,6 +238,7 @@ This is a passion project I've made to practice writing Rust code and use as a p
 - AI was **NOT** used for the logo (source `.svg` file is available).
 - AI was consulted to get unstuck while running into borrow-checker issues.
 - AI was used for finding typos in documentation.
+- AI was used to generate `SKILL.md` (Agent Skills spec) for AI agent integration.
 - As mentioned above, vibe-coded (low quality) AI contributions are **discouraged**.
 
 <!-- LICENSE -->
