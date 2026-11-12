@@ -267,6 +267,34 @@ Project Link: [https://github.com/alex-karev/yunpao](https://github.com/alex-kar
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+---
+
+## Why yunpao instead of tmux?
+
+tmux is a terminal multiplexer — it keeps a shell session alive on a remote machine. It was designed for interactive work, not for running automated workflows. yunpao is purpose-built for the same underlying need (long-running remote tasks) but solves it differently.
+
+### tmux's shortcomings for ML / build workflows
+
+| Problem | tmux | yunpao |
+|---------|------|--------|
+| **File sync** | You must `rsync` or `scp` manually every time you change code | `yunpao push` / `yunpao pull` are built in and tracked per session |
+| **Session coupling** | Detaching from tmux still requires you to know which window/pane holds your process | Sessions are named and project-scoped; switch with one command |
+| **Log persistence** | Logs live inside the tmux pane — close the terminal and scroll back is gone | yunpao streams logs to a file; `yunpao logs <action>` retrieves them any time |
+| **Multi-server** | You open one SSH connection per server manually | yunpao registers servers by alias; `--server gpu-box` routes automatically |
+| **Automation / scripting** | tmux `send-keys` is brittle and hard to script reliably | Every yunpao command is a first-class CLI call; scriptable from CI or cron |
+| **Visibility** | No overview of what is running where across servers | `yunpao tui` shows all sessions and running tasks in a single panel; `yunpao ui` opens a web dashboard |
+| **Natural language** | None | `yunpao ask "run the training job on the GPU server"` translates to the right command automatically |
+| **Editor integration** | None | A VS Code extension exposes sessions, actions, and logs in the sidebar |
+
+### In short
+
+tmux answers: *"How do I keep this shell alive?"*  
+yunpao answers: *"How do I manage my remote project, its data, its tasks, and its servers — from any machine, any editor?"*
+
+yunpao is not a replacement for tmux at the shell level; it uses SSH under the hood just like tmux does. The difference is the layer it operates at: **workflow management** instead of terminal emulation.
+
+---
+
 [contributors-shield]: https://img.shields.io/github/contributors/alex-karev/yunpao.svg?style=for-the-badge
 [contributors-url]: https://github.com/alex-karev/yunpao/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/alex-karev/yunpao.svg?style=for-the-badge

@@ -1,0 +1,113 @@
+{
+  "name": "yunpao",
+  "displayName": "yunpao",
+  "description": "Remote session and task manager — run ML training, builds, and scripts on remote servers without leaving VS Code",
+  "version": "0.1.0",
+  "publisher": "yunpao",
+  "engines": { "vscode": "^1.80.0" },
+  "categories": ["Other"],
+  "keywords": ["remote", "ssh", "ml", "training", "runner"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "yunpao.push",
+        "title": "yunpao: Push files to remote",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "yunpao.run",
+        "title": "yunpao: Run action",
+        "icon": "$(play)"
+      },
+      {
+        "command": "yunpao.watch",
+        "title": "yunpao: Watch logs",
+        "icon": "$(output)"
+      },
+      {
+        "command": "yunpao.openUi",
+        "title": "yunpao: Open dashboard",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "yunpao.ask",
+        "title": "yunpao: Ask AI",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "yunpao.openTui",
+        "title": "yunpao: Open TUI",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "yunpao.refreshSessions",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "yunpao",
+          "title": "yunpao",
+          "icon": "$(cloud)"
+        }
+      ]
+    },
+    "views": {
+      "yunpao": [
+        {
+          "id": "yunpaoSessions",
+          "name": "Sessions"
+        },
+        {
+          "id": "yunpaoActions",
+          "name": "Actions"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "yunpao.refreshSessions",
+          "when": "view == yunpaoSessions",
+          "group": "navigation"
+        },
+        {
+          "command": "yunpao.openUi",
+          "when": "view == yunpaoSessions",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "yunpao.watch",
+          "when": "viewItem == yunpaoTask",
+          "group": "inline"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "yunpao",
+      "properties": {
+        "yunpao.binaryPath": {
+          "type": "string",
+          "default": "yunpao",
+          "description": "Path to the yunpao binary (default: looks in PATH)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
