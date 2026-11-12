@@ -77,6 +77,25 @@ pub enum Commands {
         #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
+    /// Ask AI to run a yunpao command using natural language
+    Ask {
+        /// Natural language request (e.g. "run training on my GPU server")
+        request: String,
+        /// Skip confirmation and run immediately
+        #[arg(short, long)]
+        yes: bool,
+    },
+    /// Launch the interactive TUI dashboard
+    Tui,
+    /// Launch the web-based GUI dashboard in the browser
+    Ui {
+        /// Port to listen on
+        #[arg(short, long, default_value_t = 8080)]
+        port: u16,
+        /// Don't open a browser tab automatically
+        #[arg(long)]
+        no_open: bool,
+    },
     /// Connect to remote server via ssh
     SSH,
     /// Delete session files on remote server

@@ -16,13 +16,24 @@ chrono = "0.4.45"
 clap = { version = "4.6.7", features = ["derive"] }
 cliclack = "0.5.6"
 colored = "3.1.1"
+crossterm = "0.28"
 ctrlc = "3.5.2"
 derive = "1.0.0"
 dirs = "7.0.0"
 dotenvy = "0.15.7"
 edit = "0.1.5"
 log = { version = "0.4.34", features = ["std"]}
+ratatui = "0.28"
+reqwest = { version = "0.12", features = ["blocking", "json"] }
 serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0"
 shellexpand = "3.1.2"
+shlex = "1"
 toml = "1.1.6"
 uuid = { version = "1.26.1", features = ["v4"] }
+axum = { version = "0.7", features = ["ws"] }
+tokio = { version = "1", features = ["full"] }
+open = "5"
+async-stream = "0.3"
+futures-util = "0.3"
+portable-pty = "0.8"

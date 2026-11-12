@@ -51,6 +51,32 @@ impl ProjectState {
         Ok(state)
     }
 
+    /// The project id this state belongs to.
+    pub fn id(&self) -> &String {
+        &self.id
+    }
+
+    /// Read-modify-write under an exclusive file lock, starting from what's on disk *now*.
+    /// The web page, its job queue and the terminal can all change the state at once; a plain
+    /// load … save would let the last writer silently drop the others' tasks and sessions.
+    pub fn update<T>(project_id: &String, f: impl FnOnce(&mut Self) -> Result<T>) -> Result<(Self, T)> {
+        let path = Self::build_path(project_id);
+        if let Some(dir) = path.parent() {
+            std::fs::create_dir_all(dir)?;
+        }
+        let lock = std::fs::OpenOptions::new()
+            .create(true)
+            .truncate(false)
+            .write(true)
+            .open(path.with_extension("lock"))
+            .context("Could not open the state lock file")?;
+        lock.lock().context("Could not lock the project state")?;
+        let mut state = Self::load(project_id)?;
+        let out = f(&mut state)?;
+        state.save()?;
+        Ok((state, out))
+    }
+
     /// Save project state
     pub fn save(&self) -> Result<()> {
         let path = self.get_path();
@@ -61,18 +87,41 @@ impl ProjectState {
     /// Start new session
     pub fn new_session(&mut self, server_id: &String, name: Option<&String>) -> Result<()> {
         let session = Session::new(server_id, name);
-        self.current_session = Some(session.id.clone());
-        self.sessions.insert(session.id.clone(), session);
-        self.save()?;
+        let (fresh, _) = Self::update(&self.id, |st| {
+            st.current_session = Some(session.id.clone());
+            st.sessions.insert(session.id.clone(), session);
+            Ok(())
+        })?;
+        *self = fresh;
         Ok(())
     }
 
     /// Switch to session
     pub fn switch_session(&mut self, session_id: &String) -> Result<()> {
-        ensure!(self.sessions.contains_key(session_id), "Session with id \"{}\" not found", session_id);
-        self.current_session = Some(session_id.clone());
-        self.save()?;
+        // A session only we know about (created in this process, not on disk yet) is kept.
+        let mine = self.sessions.get(session_id).cloned();
+        let (fresh, _) = Self::update(&self.id, |st| {
+            if let Some(s) = mine {
+                st.sessions.entry(session_id.clone()).or_insert(s);
+            }
+            ensure!(st.sessions.contains_key(session_id), "Session with id \"{}\" not found", session_id);
+            st.current_session = Some(session_id.clone());
+            Ok(())
+        })?;
+        *self = fresh;
         Ok(())
+    }
+
+    /// The session with this id, inserting `session` if the file doesn't have it (yet).
+    pub fn session_or_insert(&mut self, session: Session) -> &mut Session {
+        self.sessions.entry(session.id.clone()).or_insert(session)
+    }
+
+    /// Sets the current session without saving (for use inside [`Self::update`]).
+    pub fn switch_current(&mut self, session_id: String) {
+        if self.sessions.contains_key(&session_id) {
+            self.current_session = Some(session_id);
+        }
     }
 
     /// Find session by id or name
@@ -108,6 +157,11 @@ impl ProjectState {
         }
     }
 
+    /// Get session by id as mutable
+    pub fn session_mut(&mut self, session_id: &str) -> Option<&mut Session> {
+        self.sessions.get_mut(session_id)
+    }
+
     /// Get current session as mutable
     pub fn current_session_mut(&mut self) -> Option<&mut Session> {
         if let Some(current_session) = self.current_session.as_ref() {
@@ -115,5 +169,34 @@ impl ProjectState {
         } else {
             None
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn concurrent_updates_keep_every_change() {
+        let id = format!("test-{}", crate::utils::random_uuid());
+        let threads: Vec<_> = (0..20)
+            .map(|i| {
+                let id = id.clone();
+                std::thread::spawn(move || {
+                    ProjectState::update(&id, |st| {
+                        let s = Session::new(&format!("server{i}"), None);
+                        st.session_or_insert(s);
+                        Ok(())
+                    })
+                    .unwrap();
+                })
+            })
+            .collect();
+        threads.into_iter().for_each(|t| t.join().unwrap());
+        let n = ProjectState::load(&id).unwrap().list_sessions().count();
+        let path = ProjectState::build_path(&id);
+        let _ = std::fs::remove_file(&path);
+        let _ = std::fs::remove_file(path.with_extension("lock"));
+        assert_eq!(n, 20);
     }
 }

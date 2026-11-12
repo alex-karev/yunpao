@@ -3,13 +3,16 @@ use crate::cli::helpers::*;
 use crate::cli::logger::{CliclackLogger, CliclackTheme};
 use crate::cli::server_dialogs::{new_server_dialog, select_server_dialog};
 use crate::cli::session_dialogs::{new_session_name_dialog, select_session_dialog};
-use anyhow::{Context, Result, bail, ensure};
+use anyhow::{anyhow, Context, Result, bail, ensure};
 use clap::Parser;
 use cliclack::{confirm, intro, log::success, outro, outro_cancel, set_theme};
 use colored::Colorize;
 use log::LevelFilter;
+use yunpao::ai;
 use yunpao::config::{Global, Project};
 use yunpao::ssh::{RemoteCommand, RemoteContext, clear_cache, interactive_ssh, ssh_copy_id};
+use yunpao::gui;
+use yunpao::tui::{self, TuiAction};
 
 /// Start CLI application
 pub fn run() -> Result<()> {
@@ -40,6 +43,12 @@ pub fn run() -> Result<()> {
                 !Project::exists(),
                 "Project is already initialized. See yunpao.toml"
             );
+            if let Some(why) = yunpao::ssh::too_broad_project_dir(&std::env::current_dir()?) {
+                bail!("{why}");
+            }
+            if let Some(warn) = yunpao::ssh::junk_project_dir(&std::env::current_dir()?) {
+                log::warn!("{warn}");
+            }
             Project::init()?;
             success("Project initialized")?;
             if confirm("Would you like to edit yunpao.toml now?").interact()? {
@@ -88,12 +97,14 @@ pub fn run() -> Result<()> {
                 bail!("Action cancelled!");
             }
             let args_str = parse_args(args);
-            let pid = context.run(
+            let typed = format!("{} {}", project.actions.get(&action).cloned().unwrap_or_default(), args_str.clone().unwrap_or_default());
+            let (pid, run_id) = context.run_tracked(
                 &mut project,
                 RemoteCommand::Action(&action),
                 !no_sync,
                 args_str,
             )?;
+            record_in_history(&config, &project, &action, typed.trim(), &pid, &run_id);
             success(format!("Process is started with pid {pid}"))?;
             if watch {
                 watch_logs(&context, &action)?;
@@ -160,12 +171,14 @@ pub fn run() -> Result<()> {
                 bail!("Action cancelled!");
             }
             let args_str = parse_args(args);
-            let pid = context.run(
+            let typed = format!("{command} {}", args_str.clone().unwrap_or_default());
+            let (pid, run_id) = context.run_tracked(
                 &mut project,
                 RemoteCommand::Exec(&command),
                 !no_sync,
                 args_str,
             )?;
+            record_in_history(&config, &project, action, typed.trim(), &pid, &run_id);
             success(format!("Process is started with pid {pid}"))?;
             log::info!("Use \"{}\" as action id for {} sub-commands", action.bold().blue(), "kill|log|swtich".bold());
             if watch {
@@ -188,6 +201,77 @@ pub fn run() -> Result<()> {
             } else {
                 bail!("Action cancelled");
             }
+        }
+
+        Commands::Ask { request, yes } => {
+            intro("Yunpao AI")?;
+            let project = Project::load().ok();
+            let ctx = ai::AiContext {
+                servers: config
+                    .servers
+                    .values()
+                    .flat_map(|s| s.aliases.clone())
+                    .collect(),
+                actions: project
+                    .as_ref()
+                    .map(|p| p.actions.keys().cloned().collect())
+                    .unwrap_or_default(),
+                current_session: project
+                    .as_ref()
+                    .and_then(|p| p.state.current_session())
+                    .map(|s| s.name.clone()),
+            };
+            let spinner = cliclack::spinner();
+            spinner.start("Thinking…");
+            let result = ai::ask(&request, &ctx);
+            spinner.stop("");
+            let (explanation, command_opt) = result?;
+            match command_opt {
+                None => {
+                    outro_cancel(explanation)?;
+                }
+                Some(command) => {
+                    cliclack::log::info(format!("{explanation}"))?;
+                    cliclack::log::info(format!("Command: {}", command.bold().blue()))?;
+                    if yes || confirm("Run this command?").interact()? {
+                        let stripped = command.trim_start_matches("yunpao").trim();
+                        let args = shlex::split(stripped)
+                            .ok_or_else(|| anyhow!("Could not parse suggested command"))?;
+                        let exe = std::env::current_exe()?;
+                        std::process::Command::new(exe).args(&args).status()?;
+                        outro("Done!")?;
+                    } else {
+                        outro_cancel("Cancelled")?;
+                    }
+                }
+            }
+        }
+
+        Commands::Tui => {
+            let project = get_project()?;
+            match tui::run(&config, &project.state)? {
+                TuiAction::Quit | TuiAction::None => {}
+                TuiAction::SwitchSession(id) => {
+                    let mut state = project.state.clone();
+                    state.switch_session(&id)?;
+                    let session = state.current_session().unwrap();
+                    println!("Switched to session \"{}\"", session.name.bold());
+                }
+                TuiAction::WatchLogs { session_id, action } => {
+                    let mut watch_project = Project::load()?;
+                    if watch_project.state.current_session().map(|s| s.id.clone()).as_deref() != Some(&session_id) {
+                        watch_project.state.switch_session(&session_id)?;
+                    }
+                    let context = RemoteContext::new(&config, &watch_project)?;
+                    watch_logs(&context, &action)?;
+                }
+            }
+        }
+
+        Commands::Ui { port, no_open } => {
+            let project = get_project()?;
+            println!("\n  Starting yunpao UI…");
+            gui::serve(&config, &project, port, !no_open)?;
         }
 
         Commands::SSH => {
@@ -385,4 +469,15 @@ pub fn run() -> Result<()> {
         }
     }
     Ok(())
+}
+
+/// Terminal runs go into the same history as the web page's (best effort).
+fn record_in_history(config: &Global, project: &Project, name: &str, command: &str, pid: &str, run_id: &str) {
+    let Some(session) = project.state.current_session() else { return };
+    let label = config
+        .servers
+        .get(&session.server)
+        .map(|s| s.aliases.iter().find(|a| !a.contains('@')).cloned().unwrap_or_else(|| format!("{}@{}", s.user, s.host)))
+        .unwrap_or_default();
+    yunpao::gui::record_cli_run(&project.id, &session.server, &label, &session.id, name, command, pid, run_id);
 }
