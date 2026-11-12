@@ -48,6 +48,7 @@
     <a href="#usage">Usage</a>
       <ul>
         <li><a href="#quick-start">Quick start</a></li>
+        <li><a href="#web-dashboard">Web dashboard</a></li>
         <li><a href="#how-it-works">How it works</a></li>
       </ul>
     </li>
@@ -80,6 +81,7 @@ A CLI tool that helps syncing project files with remote server, run actions and 
 * Supports multiple sessions with multiple servers at the same time.
 * Advanced environment configuration with per-project variables via dotenv file, per-server variables and system-wide variables.
 * Server and session manager included.
+* Web dashboard for remote jobs, logs, NVIDIA GPU monitoring and SSH terminals.
 * Works with any Linux server. No server-side configuration needed aside from installing `rsync`.
 * Does not clutter your system (both local and remote). Operates entirely in `~/.cache/yunpao` and can be removed any time.
 * Simple and well-documented configuration format.
@@ -165,6 +167,22 @@ yunpao pull
 
 > WARNING: `yunpao push|run` uploads everything except for `.git` directory or patterns listed in `.gitignore`, while `yunpao pull` only downloads files specified in "artifacts" section in `yunpao.toml`
 
+### Web dashboard
+
+From a project directory containing `yunpao.toml`, launch the dashboard:
+
+```sh
+yunpao ui
+```
+
+The dashboard opens in your browser at `http://localhost:8080`. It listens on localhost only. Use `yunpao ui --port 8081` to choose another port, or `yunpao ui --no-open` to open the URL manually. Stop the dashboard with Ctrl+C.
+
+Use the dashboard to view servers and sessions, import SSH hosts, monitor NVIDIA GPU usage, submit and stop jobs, inspect logs and job history, pull results, and open an SSH terminal. It also includes a job queue and an optional AI assistant.
+
+<div align="center">
+  <img src="assets/ui.png" alt="YunPao web dashboard" width="768">
+</div>
+
 ### How it works
 
 YunPao operates on Projects, Servers, Sessions and Actions:
@@ -232,15 +250,11 @@ Vibe-coded, low quality AI contributions are **discouraged**.
 <!-- AI DISCLOSURE -->
 ## AI Disclosure
 
-This is a passion project I've made to practice writing Rust code and use as a part of my own academic research pipeline.
+Earliest versions (before the UI update) were developed without any AI tools. AI was only used for getting unstuck while fighting the borrow-checker. Originally, this was a passion project made to practice writing Rust code and all AI contributions were discouraged.
 
-- AI was **NOT** used for code generation.
-- AI was **NOT** used for the logo (source `.svg` file is available).
-- AI was consulted to get unstuck while running into borrow-checker issues.
-- AI was used for finding typos in documentation.
-- AI was used to generate `SKILL.md` (Agent Skills spec) for AI agent integration.
-- As mentioned above, vibe-coded (low quality) AI contributions are **discouraged**.
+However, considering the limited time and resources of the core contributors, we now accept contributions made with AI with the condition that they are of a **high quality** and **reviewed manually**. Low-quality, low-effort contributions are still **discouraged**, whether they were made with the help of AI or not.
 
+AI was **NOT** used for the logo (source `.svg` file is available).
 <!-- LICENSE -->
 ## License
 
