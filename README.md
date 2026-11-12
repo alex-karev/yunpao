@@ -49,6 +49,7 @@
       <ul>
         <li><a href="#quick-start">Quick start</a></li>
         <li><a href="#web-dashboard">Web dashboard</a></li>
+        <li><a href="#research-skills">Research skills</a></li>
         <li><a href="#how-it-works">How it works</a></li>
       </ul>
     </li>
@@ -182,6 +183,22 @@ Use the dashboard to view servers and sessions, import SSH hosts, monitor NVIDIA
 <div align="center">
   <img src="assets/ui.png" alt="YunPao web dashboard" width="768">
 </div>
+
+### Research skills
+
+Three optional agent skills organize research into paper collection, idea development, and experiments. Each skill defines its inputs, procedure, artifacts, and completion criteria. The skill instructions are currently written in Chinese.
+
+| Stage | Skill | Outputs in the research directory |
+| --- | --- | --- |
+| Collect papers | [research-collect-papers](skills/research-collect-papers/SKILL.md) | `papers/papers.json` and `papers/survey.md`: source-linked papers, method comparisons, and research gaps |
+| Develop ideas | [research-generate-ideas](skills/research-generate-ideas/SKILL.md) | `ideas/ideas.md` and `ideas/idea.json`: candidate comparisons, a testable hypothesis, and a minimal experiment plan |
+| Run experiments | [research-run-experiments](skills/research-run-experiments/SKILL.md) | `experiments/<run-id>/`: the frozen plan, metrics, logs, and an evidence-backed report |
+
+Ask your AI agent to read the linked `SKILL.md` for the stage you need, or install that skill directory using your agent's skill-loading mechanism. Pass the preceding stage's output files as inputs. An experiment report can feed the next idea revision, and missing literature evidence can lead back to paper collection.
+
+The experiment skill uses YunPao's existing server/session configuration and `run`, `logs` / `watch`, and `pull` commands for remote execution. Configure the experiment action and artifact paths in `yunpao.toml` first. Completion requires the planned results and their supporting evidence, including unsuccessful hypotheses; starting a background task alone is not completion. These files provide workflows for external AI agents and do not add CLI commands or automatically load into `yunpao ask` or the dashboard assistant.
+
+The general [YunPao agent skill](SKILL.md) documents the CLI and links to these workflows.
 
 ### How it works
 
