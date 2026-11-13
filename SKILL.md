@@ -33,7 +33,7 @@ Most commands that prompt for confirmation accept `-y` / `--yes` to skip dialogs
 
 ### Core workflow
 
-- `yunpao init` — create `yunpao.toml` in current dir. Prompts to edit unless `-y`.
+- `yunpao init` — create `yunpao.toml` in current dir and prompt to edit it. This command does not accept `-y`.
 - `yunpao push` — rsync current directory to remote `working/`.
 - `yunpao pull` — download `artifacts` from remote to local.
 - `yunpao run <action> [-w] [-f] [--no-sync] [args...]` — run a predefined action as a background task.
@@ -77,3 +77,13 @@ Most commands that prompt for confirmation accept `-y` / `--yes` to skip dialogs
 - Use `--no-sync` when files haven't changed since last push.
 - For pulling artifacts, verify `yunpao.toml` has the right `artifacts` paths.
 - Read `yunpao.toml` directly when you need to know project-specific actions or artifacts.
+
+## Research workflows
+
+For a research task, read the workflow matching the requested stage. These optional skills have Chinese-language instructions and explicit artifact handoffs:
+
+- [Collect papers](skills/research-collect-papers/SKILL.md): search, deduplicate, read evidence, and prepare `papers/papers.json` and `papers/survey.md`.
+- [Develop ideas](skills/research-generate-ideas/SKILL.md): use the literature evidence to compare candidates, check prior-work overlap, and write `ideas/idea.json` with a testable hypothesis and experiment plan.
+- [Run experiments](skills/research-run-experiments/SKILL.md): use a selected idea to prepare data, freeze the comparison plan, execute and verify results, and return a report for the next idea revision.
+
+Keep each stage's source evidence and output files available to the next stage. Use YunPao's existing commands when remote execution is part of the requested work. Read only the needed stage; a paper-collection or idea request does not by itself request experiment execution.
